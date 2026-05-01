@@ -29,6 +29,14 @@
 
     <!-- Основной контент -->
     <div class="container mt-4">
+        <!-- Блок для отображения сообщения об успешной отправке -->
+        {% if message_sent %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <strong>✅ Спасибо за обращение!</strong> Ваше сообщение успешно отправлено. Мы свяжемся с вами в ближайшее время.
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endif %}
+
         <div class="row">
             <div class="col-md-6">
                 <h2>Свяжитесь с нами</h2>
