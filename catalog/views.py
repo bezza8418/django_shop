@@ -1,5 +1,9 @@
 from django.shortcuts import render, get_object_or_404
 from .models import Product
+from .forms import ProductForm
+from django.shortcuts import redirect
+from django.urls import reverse
+from django.contrib import messages
 
 
 def home(request):
@@ -29,3 +33,17 @@ def product_detail(request, pk):
     """Контроллер для детальной страницы товара"""
     product = get_object_or_404(Product, pk=pk)
     return render(request, 'catalog/product_detail.html', {'product': product})
+
+
+def add_product(request):
+    """Контроллер для добавления нового товара"""
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Товар успешно добавлен!')
+            return redirect('catalog:home')
+    else:
+        form = ProductForm()
+
+    return render(request, 'catalog/add_product.html', {'form': form})

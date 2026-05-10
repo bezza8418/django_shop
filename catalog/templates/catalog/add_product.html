@@ -1,0 +1,70 @@
+{% extends 'catalog/base.html' %}
+
+{% block title %}Добавить товар - Django Shop{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <h2 class="mb-4">Добавление нового товара</h2>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data" class="card p-4">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label for="id_name" class="form-label">Название товара *</label>
+                {{ form.name }}
+                {% if form.name.errors %}
+                    <div class="text-danger">{{ form.name.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="mb-3">
+                <label for="id_description" class="form-label">Описание *</label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                    <div class="text-danger">{{ form.description.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="mb-3">
+                <label for="id_category" class="form-label">Категория *</label>
+                {{ form.category }}
+                {% if form.category.errors %}
+                    <div class="text-danger">{{ form.category.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="mb-3">
+                <label for="id_price" class="form-label">Цена (₽) *</label>
+                {{ form.price }}
+                {% if form.price.errors %}
+                    <div class="text-danger">{{ form.price.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="mb-3">
+                <label for="id_image" class="form-label">Изображение</label>
+                {{ form.image }}
+                <div class="form-text">Необязательное поле. Рекомендуемый размер: 800x600.</div>
+                {% if form.image.errors %}
+                    <div class="text-danger">{{ form.image.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Добавить товар</button>
+                <a href="{% url 'catalog:home' %}" class="btn btn-secondary">Отмена</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
