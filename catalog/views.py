@@ -1,8 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
+from .models import Product
+
 
 def home(request):
-    """Контроллер для главной страницы"""
-    return render(request, 'catalog/home.html')
+    """Контроллер для главной страницы со списком товаров"""
+    products = Product.objects.all()
+    return render(request, 'catalog/home.html', {'products': products})
 
 
 def contacts(request):
@@ -10,7 +13,6 @@ def contacts(request):
     message_sent = False
 
     if request.method == 'POST':
-        # Получаем данные из формы
         name = request.POST.get('name', '')
         email = request.POST.get('email', '')
         message = request.POST.get('message', '')
@@ -18,7 +20,12 @@ def contacts(request):
         print(f"\n📬 Получено сообщение от {name} ({email}):")
         print(f"Сообщение: {message}\n")
 
-        # Устанавливаем флаг, что сообщение отправлено
         message_sent = True
 
     return render(request, 'catalog/contacts.html', {'message_sent': message_sent})
+
+
+def product_detail(request, pk):
+    """Контроллер для детальной страницы товара"""
+    product = get_object_or_404(Product, pk=pk)
+    return render(request, 'catalog/product_detail.html', {'product': product})

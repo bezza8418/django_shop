@@ -3,11 +3,38 @@
 {% block title %}Главная - Django Shop{% endblock %}
 
 {% block content %}
-<div class="jumbotron bg-light p-5 rounded">
+<div class="jumbotron bg-light p-5 rounded mb-4">
     <h1 class="display-4">Добро пожаловать в Django Shop!</h1>
     <p class="lead">Лучшие товары по лучшим ценам</p>
     <hr class="my-4">
-    <p>Скоро здесь появится каталог товаров</p>
-    <a class="btn btn-primary btn-lg" href="/contacts/">Связаться с нами</a>
+    <p>Посмотрите наш каталог товаров ниже</p>
+</div>
+
+<h2 class="mb-4">Наши товары</h2>
+
+<div class="row">
+    {% for product in products %}
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            {% if product.image %}
+            <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}" style="height: 200px; object-fit: cover;">
+            {% else %}
+            <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 200px;">
+                <span class="text-white">Нет фото</span>
+            </div>
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ product.name }}</h5>
+                <p class="card-text">{{ product.description|truncatechars:100 }}</p>
+                <p class="card-text fw-bold text-primary">{{ product.price }} ₽</p>
+                <a href="{% url 'catalog:product_detail' product.id %}" class="btn btn-primary">Подробнее</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <p class="text-center">Товаров пока нет. Загрузите тестовые данные командой: <code>python manage.py load_test_data</code></p>
+    </div>
+    {% endfor %}
 </div>
 {% endblock %}
