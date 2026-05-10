@@ -4,6 +4,7 @@ from .forms import ProductForm
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.contrib import messages
+from django.core.paginator import Paginator
 
 
 def home(request):
@@ -47,3 +48,14 @@ def add_product(request):
         form = ProductForm()
 
     return render(request, 'catalog/add_product.html', {'form': form})
+
+
+def home(request):
+    """Контроллер для главной страницы с пагинацией"""
+    products_list = Product.objects.all()
+    paginator = Paginator(products_list, 6)  # 6 товаров на страницу
+
+    page_number = request.GET.get('page')
+    products = paginator.get_page(page_number)
+
+    return render(request, 'catalog/home.html', {'products': products})
