@@ -1,0 +1,49 @@
+{% extends 'catalog/base.html' %}
+
+{% block title %}{% if form.instance.pk %}Редактировать статью{% else %}Новая статья{% endif %}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <h2>{% if form.instance.pk %}Редактировать статью{% else %}Новая статья{% endif %}</h2>
+
+        {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data" class="card p-4">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label for="id_title" class="form-label">Заголовок</label>
+                {{ form.title }}
+            </div>
+
+            <div class="mb-3">
+                <label for="id_content" class="form-label">Содержимое</label>
+                {{ form.content }}
+            </div>
+
+            <div class="mb-3">
+                <label for="id_preview" class="form-label">Превью</label>
+                {{ form.preview }}
+            </div>
+
+            <div class="mb-3 form-check">
+                {{ form.is_published }}
+                <label for="id_is_published" class="form-check-label">Опубликовано</label>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+                <a href="{% url 'blog:list' %}" class="btn btn-secondary">Отмена</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
