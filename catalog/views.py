@@ -1,23 +1,44 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, redirect
+from django.views import View
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
+from django.urls import reverse_lazy
+from django.contrib import messages
 from .models import Product
 from .forms import ProductForm
-from django.shortcuts import redirect
-from django.urls import reverse
-from django.contrib import messages
-from django.core.paginator import Paginator
 
 
-def home(request):
-    """Контроллер для главной страницы со списком товаров"""
-    products = Product.objects.all()
-    return render(request, 'catalog/home.html', {'products': products})
+class HomeView(ListView):
+    """Главная страница со списком товаров и пагинацией"""
+    model = Product
+    template_name = 'catalog/home.html'
+    context_object_name = 'products'
+    paginate_by = 6
 
 
-def contacts(request):
-    """Контроллер для страницы контактов с обработкой формы"""
-    message_sent = False
+class ProductDetailView(DetailView):
+    """Детальная страница товара"""
+    model = Product
+    template_name = 'catalog/product_detail.html'
+    context_object_name = 'product'
 
-    if request.method == 'POST':
+
+class ProductCreateView(CreateView):
+    """Добавление нового товара"""
+    model = Product
+    form_class = ProductForm
+    template_name = 'catalog/add_product.html'
+    success_url = reverse_lazy('catalog:home')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Товар успешно добавлен!')
+        return super().form_valid(form)
+
+
+class ContactsView(TemplateView):
+    """Страница контактов с формой обратной связи"""
+    template_name = 'catalog/contacts.html'
+
+    def post(self, request, *args, **kwargs):
         name = request.POST.get('name', '')
         email = request.POST.get('email', '')
         message = request.POST.get('message', '')
@@ -25,37 +46,4 @@ def contacts(request):
         print(f"\n📬 Получено сообщение от {name} ({email}):")
         print(f"Сообщение: {message}\n")
 
-        message_sent = True
-
-    return render(request, 'catalog/contacts.html', {'message_sent': message_sent})
-
-
-def product_detail(request, pk):
-    """Контроллер для детальной страницы товара"""
-    product = get_object_or_404(Product, pk=pk)
-    return render(request, 'catalog/product_detail.html', {'product': product})
-
-
-def add_product(request):
-    """Контроллер для добавления нового товара"""
-    if request.method == 'POST':
-        form = ProductForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Товар успешно добавлен!')
-            return redirect('catalog:home')
-    else:
-        form = ProductForm()
-
-    return render(request, 'catalog/add_product.html', {'form': form})
-
-
-def home(request):
-    """Контроллер для главной страницы с пагинацией"""
-    products_list = Product.objects.all()
-    paginator = Paginator(products_list, 6)  # 6 товаров на страницу
-
-    page_number = request.GET.get('page')
-    products = paginator.get_page(page_number)
-
-    return render(request, 'catalog/home.html', {'products': products})
+        return render(request, self.template_name, {'message_sent': True})
