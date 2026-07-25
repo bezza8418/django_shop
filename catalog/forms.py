@@ -60,3 +60,22 @@ class ProductForm(forms.ModelForm):
                 'Цена не может быть отрицательной. Пожалуйста, введите корректную цену.'
             )
         return price
+
+    def clean_image(self):
+        image = self.cleaned_data.get('image')
+
+        if image:
+            # Проверяем размер файла (максимум 5 МБ)
+            if image.size > 5 * 1024 * 1024:
+                raise forms.ValidationError(
+                    'Размер изображения не должен превышать 5 МБ.'
+                )
+
+            # Проверяем формат файла
+            valid_formats = ['image/jpeg', 'image/png']
+            if image.content_type not in valid_formats:
+                raise forms.ValidationError(
+                    'Допустимые форматы: JPEG и PNG.'
+                )
+
+        return image
