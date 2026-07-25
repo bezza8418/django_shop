@@ -20,24 +20,37 @@ class ProductForm(forms.ModelForm):
             'price': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Цена в рублях'}),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Принудительно добавляем класс form-control ко всем полям, кроме чекбоксов
+        for field_name, field in self.fields.items():
+            if isinstance(field, forms.BooleanField):
+                continue
+            if hasattr(field.widget, 'attrs'):
+                field.widget.attrs.setdefault('class', '')
+                if 'form-control' not in field.widget.attrs['class']:
+                    field.widget.attrs['class'] += ' form-control'
+
     def clean_name(self):
         name = self.cleaned_data.get('name')
-        name_lower = name.lower()
-        for word in FORBIDDEN_WORDS:
-            if word in name_lower:
-                raise forms.ValidationError(
-                    f'Название содержит запрещённое слово: "{word}".'
-                )
+        if name:
+            name_lower = name.lower()
+            for word in FORBIDDEN_WORDS:
+                if word in name_lower:
+                    raise forms.ValidationError(
+                        f'Название содержит запрещённое слово: "{word}".'
+                    )
         return name
 
     def clean_description(self):
         description = self.cleaned_data.get('description')
-        desc_lower = description.lower()
-        for word in FORBIDDEN_WORDS:
-            if word in desc_lower:
-                raise forms.ValidationError(
-                    f'Описание содержит запрещённое слово: "{word}".'
-                )
+        if description:
+            desc_lower = description.lower()
+            for word in FORBIDDEN_WORDS:
+                if word in desc_lower:
+                    raise forms.ValidationError(
+                        f'Описание содержит запрещённое слово: "{word}".'
+                    )
         return description
 
     def clean_price(self):
@@ -47,4 +60,3 @@ class ProductForm(forms.ModelForm):
                 'Цена не может быть отрицательной. Пожалуйста, введите корректную цену.'
             )
         return price
-
