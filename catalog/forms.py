@@ -1,5 +1,11 @@
 from django import forms
-from .models import Product, Category
+from .models import Product
+
+# Запрещённые слова (список вынесен в константу)
+FORBIDDEN_WORDS = [
+    'казино', 'криптовалюта', 'крипта', 'биржа',
+    'дешево', 'бесплатно', 'обман', 'полиция', 'радар'
+]
 
 
 class ProductForm(forms.ModelForm):
@@ -13,3 +19,23 @@ class ProductForm(forms.ModelForm):
             'category': forms.Select(attrs={'class': 'form-select'}),
             'price': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Цена в рублях'}),
         }
+
+    def clean_name(self):
+        name = self.cleaned_data.get('name')
+        name_lower = name.lower()
+        for word in FORBIDDEN_WORDS:
+            if word in name_lower:
+                raise forms.ValidationError(
+                    f'Название содержит запрещённое слово: "{word}".'
+                )
+        return name
+
+    def clean_description(self):
+        description = self.cleaned_data.get('description')
+        desc_lower = description.lower()
+        for word in FORBIDDEN_WORDS:
+            if word in desc_lower:
+                raise forms.ValidationError(
+                    f'Описание содержит запрещённое слово: "{word}".'
+                )
+        return description
