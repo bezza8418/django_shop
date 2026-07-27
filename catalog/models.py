@@ -45,6 +45,10 @@ class Product(models.Model):
         decimal_places=2,
         verbose_name='цена за покупку'
     )
+    is_published = models.BooleanField(
+        default=True,
+        verbose_name='опубликовано'
+    )
     created_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name='дата создания'

@@ -34,6 +34,31 @@ class ProductCreateView(CreateView):
         return super().form_valid(form)
 
 
+class ProductUpdateView(UpdateView):
+    """Редактирование товара"""
+    model = Product
+    form_class = ProductForm
+    template_name = 'catalog/add_product.html'
+
+    def get_success_url(self):
+        return reverse_lazy('catalog:product_detail', kwargs={'pk': self.object.pk})
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Товар успешно обновлён!')
+        return super().form_valid(form)
+
+
+class ProductDeleteView(DeleteView):
+    """Удаление товара"""
+    model = Product
+    template_name = 'catalog/product_confirm_delete.html'
+    success_url = reverse_lazy('catalog:home')
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(self.request, 'Товар успешно удалён!')
+        return super().delete(request, *args, **kwargs)
+
+
 class ContactsView(TemplateView):
     """Страница контактов с формой обратной связи"""
     template_name = 'catalog/contacts.html'

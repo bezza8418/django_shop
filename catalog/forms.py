@@ -11,7 +11,7 @@ FORBIDDEN_WORDS = [
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ['name', 'description', 'image', 'category', 'price']
+        fields = ['name', 'description', 'image', 'category', 'price', 'is_published']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Введите название товара'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 5, 'placeholder': 'Описание товара'}),
@@ -22,14 +22,16 @@ class ProductForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Принудительно добавляем класс form-control ко всем полям, кроме чекбоксов
         for field_name, field in self.fields.items():
             if isinstance(field, forms.BooleanField):
-                continue
-            if hasattr(field.widget, 'attrs'):
-                field.widget.attrs.setdefault('class', '')
-                if 'form-control' not in field.widget.attrs['class']:
-                    field.widget.attrs['class'] += ' form-control'
+                if hasattr(field.widget, 'attrs'):
+                    field.widget.attrs.setdefault('class', '')
+                    field.widget.attrs['class'] += ' form-check-input'
+            else:
+                if hasattr(field.widget, 'attrs'):
+                    field.widget.attrs.setdefault('class', '')
+                    if 'form-control' not in field.widget.attrs['class']:
+                        field.widget.attrs['class'] += ' form-control'
 
     def clean_name(self):
         name = self.cleaned_data.get('name')
