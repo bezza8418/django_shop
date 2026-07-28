@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'users',
     'catalog',
     'blog',
 ]
@@ -131,3 +132,6 @@ STATIC_URL = 'static/'
 # Настройки для медиафайлов
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Кастомная модель пользователя
+AUTH_USER_MODEL = 'users.User'

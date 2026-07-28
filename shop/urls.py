@@ -23,6 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('catalog.urls')),
     path('blogs/', include('blog.urls')),
+    path('users/', include('users.urls')),
 ]
 
 # Добавляем для отображения медиафайлов в режиме разработки (DEBUG=True)
