@@ -135,3 +135,21 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Кастомная модель пользователя
 AUTH_USER_MODEL = 'users.User'
+
+# Настройки для отправки почты
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Пока письма выводятся в консоль
+# Для реальной отправки раскомментировать:
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.yandex.ru'  # или smtp.gmail.com
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = 'your_email@example.com'
+# EMAIL_HOST_PASSWORD = 'your_password'
+# DEFAULT_FROM_EMAIL = 'your_email@example.com'
+
+DEFAULT_FROM_EMAIL = 'noreply@djangoshop.com'
+
+# Перенаправление после входа
+LOGIN_REDIRECT_URL = '/'
+
+LOGIN_URL = '/users/login/'

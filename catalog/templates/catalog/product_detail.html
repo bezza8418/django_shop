@@ -22,9 +22,15 @@
     </div>
 </div>
 
+{% if user.is_authenticated %}
 <div class="mt-4">
     <a href="{% url 'catalog:product_update' product.pk %}" class="btn btn-secondary">Редактировать</a>
     <a href="{% url 'catalog:product_delete' product.pk %}" class="btn btn-danger">Удалить</a>
     <a href="{% url 'catalog:home' %}" class="btn btn-outline-primary">На главную</a>
 </div>
+{% else %}
+<div class="mt-4">
+    <a href="{% url 'catalog:home' %}" class="btn btn-outline-primary">На главную</a>
+</div>
+{% endif %}
 {% endblock %}

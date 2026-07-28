@@ -5,6 +5,7 @@ from django.urls import reverse_lazy
 from django.contrib import messages
 from .models import Product
 from .forms import ProductForm
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 class HomeView(ListView):
@@ -22,8 +23,8 @@ class ProductDetailView(DetailView):
     context_object_name = 'product'
 
 
-class ProductCreateView(CreateView):
-    """Добавление нового товара"""
+class ProductCreateView(LoginRequiredMixin, CreateView):
+    """Добавление нового товара (только для авторизованных)"""
     model = Product
     form_class = ProductForm
     template_name = 'catalog/add_product.html'
@@ -34,8 +35,8 @@ class ProductCreateView(CreateView):
         return super().form_valid(form)
 
 
-class ProductUpdateView(UpdateView):
-    """Редактирование товара"""
+class ProductUpdateView(LoginRequiredMixin, UpdateView):
+    """Редактирование товара (только для авторизованных)"""
     model = Product
     form_class = ProductForm
     template_name = 'catalog/add_product.html'
@@ -48,8 +49,8 @@ class ProductUpdateView(UpdateView):
         return super().form_valid(form)
 
 
-class ProductDeleteView(DeleteView):
-    """Удаление товара"""
+class ProductDeleteView(LoginRequiredMixin, DeleteView):
+    """Удаление товара (только для авторизованных)"""
     model = Product
     template_name = 'catalog/product_confirm_delete.html'
     success_url = reverse_lazy('catalog:home')
