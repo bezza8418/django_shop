@@ -2,8 +2,11 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.views import LoginView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import UpdateView
 from django.urls import reverse_lazy
-from .forms import UserRegistrationForm, UserLoginForm
+from .models import User
+from .forms import UserRegistrationForm, UserLoginForm, UserUpdateForm
 
 
 def register(request):
@@ -16,7 +19,6 @@ def register(request):
             user.username = form.cleaned_data.get('username', '') or user.email.split('@')[0]
             user.save()
 
-            # Отправка приветственного письма
             from django.core.mail import send_mail
             from django.conf import settings
 
@@ -52,7 +54,20 @@ class UserLoginView(LoginView):
     success_url = reverse_lazy('catalog:home')
 
     def form_valid(self, form):
-        """Выводит сообщение об успешном входе"""
         messages.success(self.request, 'Вы успешно вошли в систему!')
         return super().form_valid(form)
 
+
+class ProfileUpdateView(LoginRequiredMixin, UpdateView):
+    """Редактирование профиля пользователя"""
+    model = User
+    form_class = UserUpdateForm
+    template_name = 'users/profile_edit.html'
+    success_url = reverse_lazy('catalog:home')
+
+    def get_object(self, queryset=None):
+        return self.request.user
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Профиль успешно обновлён!')
+        return super().form_valid(form)

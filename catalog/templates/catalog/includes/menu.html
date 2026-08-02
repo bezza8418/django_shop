@@ -27,6 +27,9 @@
                         <span class="navbar-text me-2">Привет, {{ user.username }}!</span>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="{% url 'users:profile_edit' %}">Профиль</a>
+                    </li>
+                    <li class="nav-item">
                         <form method="post" action="{% url 'users:logout' %}">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-link nav-link" style="display: inline; padding: 0; border: none; background: none; color: rgba(255,255,255,.55);">

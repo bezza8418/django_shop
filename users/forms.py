@@ -46,3 +46,17 @@ class UserLoginForm(AuthenticationForm):
         label='Пароль',
         widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Введите пароль'})
     )
+
+
+class UserUpdateForm(forms.ModelForm):
+    """Форма для редактирования профиля пользователя"""
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'phone', 'country', 'avatar']
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Имя пользователя'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}),
+            'phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Номер телефона'}),
+            'country': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Страна'}),
+            'avatar': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+        }

@@ -16,8 +16,8 @@ class HomeView(ListView):
     paginate_by = 6
 
 
-class ProductDetailView(DetailView):
-    """Детальная страница товара"""
+class ProductDetailView(LoginRequiredMixin, DetailView):
+    """Детальная страница товара (только для авторизованных)"""
     model = Product
     template_name = 'catalog/product_detail.html'
     context_object_name = 'product'
