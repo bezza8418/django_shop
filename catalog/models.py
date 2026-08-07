@@ -56,6 +56,14 @@ class Product(models.Model):
         default='draft',
         verbose_name='статус публикации'
     )
+    owner = models.ForeignKey(
+        'users.User',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='products',
+        verbose_name='владелец'
+    )
     created_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name='дата создания'

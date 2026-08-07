@@ -31,6 +31,7 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy('catalog:home')
 
     def form_valid(self, form):
+        form.instance.owner = self.request.user
         messages.success(self.request, 'Товар успешно добавлен!')
         return super().form_valid(form)
 
