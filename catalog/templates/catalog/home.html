@@ -12,6 +12,12 @@
 
 <h2 class="mb-4">Наши товары</h2>
 
+{% if user.is_authenticated %}
+<div class="mb-3">
+    <a href="{% url 'catalog:add_product' %}" class="btn btn-primary">Добавить товар</a>
+</div>
+{% endif %}
+
 <div class="row">
     {% for product in products %}
     <div class="col-md-4 mb-4">
@@ -27,6 +33,9 @@
                 <h5 class="card-title">{{ product.name }}</h5>
                 <p class="card-text">{{ product.description|truncatechars:100 }}</p>
                 <p class="card-text fw-bold text-primary">{{ product.price }} ₽</p>
+                <p><span class="badge {% if product.status == 'published' %}bg-success{% else %}bg-secondary{% endif %}">
+                    {{ product.get_status_display }}
+                </span></p>
                 <a href="{% url 'catalog:product_detail' product.id %}" class="btn btn-primary">Подробнее</a>
             </div>
         </div>
