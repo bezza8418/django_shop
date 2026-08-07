@@ -38,4 +38,10 @@ class Command(BaseCommand):
         call_command('loaddata', categories_fixture)
         call_command('loaddata', products_fixture)
 
+        # Добавляем статус продуктам, если его нет в фикстурах
+        for product in Product.objects.all():
+            if not product.status:
+                product.status = 'published'
+                product.save()
+
         self.stdout.write(self.style.SUCCESS('🎉 Тестовые данные успешно загружены!'))

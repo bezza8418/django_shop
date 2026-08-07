@@ -21,6 +21,11 @@ class Category(models.Model):
 
 class Product(models.Model):
     """Модель продукта"""
+    STATUS_CHOICES = [
+        ('draft', 'Черновик'),
+        ('published', 'Опубликован'),
+    ]
+
     name = models.CharField(
         max_length=200,
         verbose_name='наименование'
@@ -45,9 +50,11 @@ class Product(models.Model):
         decimal_places=2,
         verbose_name='цена за покупку'
     )
-    is_published = models.BooleanField(
-        default=True,
-        verbose_name='опубликовано'
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='draft',
+        verbose_name='статус публикации'
     )
     created_at = models.DateTimeField(
         auto_now_add=True,
