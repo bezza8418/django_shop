@@ -6,6 +6,7 @@ from django.contrib import messages
 from .models import Product
 from .forms import ProductForm
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import PermissionDenied
 
 
 class HomeView(ListView):
@@ -45,6 +46,13 @@ class ProductUpdateView(LoginRequiredMixin, UpdateView):
     def get_success_url(self):
         return reverse_lazy('catalog:product_detail', kwargs={'pk': self.object.pk})
 
+    def dispatch(self, request, *args, **kwargs):
+        obj = self.get_object()
+        # Проверяем: владелец или модератор
+        if obj.owner != request.user and not request.user.has_perm('catalog.can_unpublish_product'):
+            raise PermissionDenied('У вас нет прав на редактирование этого товара.')
+        return super().dispatch(request, *args, **kwargs)
+
     def form_valid(self, form):
         messages.success(self.request, 'Товар успешно обновлён!')
         return super().form_valid(form)
@@ -55,6 +63,13 @@ class ProductDeleteView(LoginRequiredMixin, DeleteView):
     model = Product
     template_name = 'catalog/product_confirm_delete.html'
     success_url = reverse_lazy('catalog:home')
+
+    def dispatch(self, request, *args, **kwargs):
+        obj = self.get_object()
+        # Проверяем: владелец или модератор
+        if obj.owner != request.user and not request.user.has_perm('catalog.can_unpublish_product'):
+            raise PermissionDenied('У вас нет прав на удаление этого товара.')
+        return super().dispatch(request, *args, **kwargs)
 
     def delete(self, request, *args, **kwargs):
         messages.success(self.request, 'Товар успешно удалён!')
