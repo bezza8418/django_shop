@@ -1,12 +1,13 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
 from django.urls import reverse_lazy
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import permission_required
+from django.core.exceptions import PermissionDenied
 from .models import Product
 from .forms import ProductForm
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.exceptions import PermissionDenied
 
 
 class HomeView(ListView):
@@ -15,6 +16,9 @@ class HomeView(ListView):
     template_name = 'catalog/home.html'
     context_object_name = 'products'
     paginate_by = 6
+
+    def get_queryset(self):
+        return Product.objects.all()
 
 
 class ProductDetailView(LoginRequiredMixin, DetailView):
@@ -38,7 +42,7 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
 
 
 class ProductUpdateView(LoginRequiredMixin, UpdateView):
-    """Редактирование товара (только для авторизованных)"""
+    """Редактирование товара (только для владельца или модератора)"""
     model = Product
     form_class = ProductForm
     template_name = 'catalog/add_product.html'
@@ -48,7 +52,6 @@ class ProductUpdateView(LoginRequiredMixin, UpdateView):
 
     def dispatch(self, request, *args, **kwargs):
         obj = self.get_object()
-        # Проверяем: владелец или модератор
         if obj.owner != request.user and not request.user.has_perm('catalog.can_unpublish_product'):
             raise PermissionDenied('У вас нет прав на редактирование этого товара.')
         return super().dispatch(request, *args, **kwargs)
@@ -59,14 +62,13 @@ class ProductUpdateView(LoginRequiredMixin, UpdateView):
 
 
 class ProductDeleteView(LoginRequiredMixin, DeleteView):
-    """Удаление товара (только для авторизованных)"""
+    """Удаление товара (только для владельца или модератора)"""
     model = Product
     template_name = 'catalog/product_confirm_delete.html'
     success_url = reverse_lazy('catalog:home')
 
     def dispatch(self, request, *args, **kwargs):
         obj = self.get_object()
-        # Проверяем: владелец или модератор
         if obj.owner != request.user and not request.user.has_perm('catalog.can_unpublish_product'):
             raise PermissionDenied('У вас нет прав на удаление этого товара.')
         return super().dispatch(request, *args, **kwargs)
@@ -89,3 +91,13 @@ class ContactsView(TemplateView):
         print(f"Сообщение: {message}\n")
 
         return render(request, self.template_name, {'message_sent': True})
+
+
+@permission_required('catalog.can_unpublish_product')
+def unpublish_product(request, pk):
+    """Снятие продукта с публикации (только для модераторов)"""
+    product = get_object_or_404(Product, pk=pk)
+    product.status = 'draft'
+    product.save()
+    messages.success(request, f'Продукт "{product.name}" снят с публикации.')
+    return redirect('catalog:product_detail', pk=pk)
