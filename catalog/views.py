@@ -10,6 +10,9 @@ from .models import Product
 from .forms import ProductForm
 from django.views.decorators.cache import cache_page
 from django.utils.decorators import method_decorator
+from django.shortcuts import get_object_or_404
+from .models import Category
+from .services import get_products_by_category
 
 
 class HomeView(ListView):
@@ -42,6 +45,24 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
         form.instance.owner = self.request.user
         messages.success(self.request, 'Товар успешно добавлен!')
         return super().form_valid(form)
+
+
+class ProductsByCategoryView(LoginRequiredMixin, ListView):
+    """Список продуктов в категории"""
+    model = Product
+    template_name = 'catalog/products_by_category.html'
+    context_object_name = 'products'
+    paginate_by = 6
+
+    def get_queryset(self):
+        category_id = self.kwargs.get('category_id')
+        self.category = get_object_or_404(Category, pk=category_id)
+        return get_products_by_category(category_id)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['category'] = self.category
+        return context
 
 
 class ProductUpdateView(LoginRequiredMixin, UpdateView):
