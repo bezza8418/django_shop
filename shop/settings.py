@@ -153,3 +153,15 @@ DEFAULT_FROM_EMAIL = 'noreply@djangoshop.com'
 LOGIN_REDIRECT_URL = '/'
 
 LOGIN_URL = '/users/login/'
+
+# Настройки Redis для кеширования
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://127.0.0.1:6379/1',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        },
+        'KEY_PREFIX': 'django_shop'
+    }
+}
