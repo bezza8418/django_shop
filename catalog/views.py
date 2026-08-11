@@ -8,6 +8,8 @@ from django.contrib.auth.decorators import permission_required
 from django.core.exceptions import PermissionDenied
 from .models import Product
 from .forms import ProductForm
+from django.views.decorators.cache import cache_page
+from django.utils.decorators import method_decorator
 
 
 class HomeView(ListView):
@@ -21,6 +23,7 @@ class HomeView(ListView):
         return Product.objects.all()
 
 
+@method_decorator(cache_page(60 * 15), name='dispatch')  # кеш на 15 минут
 class ProductDetailView(LoginRequiredMixin, DetailView):
     """Детальная страница товара (только для авторизованных)"""
     model = Product
